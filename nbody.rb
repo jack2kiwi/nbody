@@ -1,6 +1,7 @@
 require "gosu"
 require_relative "z_order"
 require "./Planets.rb"
+SIMULATION = gets.chomp.to_s
 
 class NbodySimulation < Gosu::Window
 
@@ -15,15 +16,17 @@ class NbodySimulation < Gosu::Window
   end
 
   def create_bodies
-    txt = File.open("simulations/planets.txt").read
+    txt = File.open("simulations/#{SIMULATION}.txt").read
     line_num = 0
     txt.split("\n")
     txt.each_line do |line|
       if line_num == 0
         @number_of_bodies = line.to_f
+        line_num += 1
       elsif line_num == 1
         @size_of_simulation = line.to_f
-      elsif line_num >= 2 && line_num <= 2 + @number_of_bodies
+        line_num += 1
+      elsif line_num >= 2 && line_num <= 1 + @number_of_bodies && line.length > 4
         line_array = line.split(" ")
         x_pos = line_array[0].to_f
         y_pos = line_array[1].to_f
@@ -32,14 +35,27 @@ class NbodySimulation < Gosu::Window
         mass = line_array[4].to_f
         planet_image = Gosu::Image.new("images/#{line_array[5]}", tileable: true)
         @bodies.push(Planets.new(x_pos, y_pos, x_vel, y_vel, mass, planet_image, @size_of_simulation))
+        line_num += 1
       end
-      line_num += 1
     end
   end
 
   def update
     @bodies.each do |body|
-      body.update
+      total_x_force = 0
+      total_y_force = 0
+      @bodies.each do |second_body|
+        if body != second_body
+          forces = body.calculate_force(second_body)
+          total_x_force += forces[0]
+          total_y_force += forces[1]
+        end
+      end
+      body.calculate_acceleration(total_x_force, total_y_force)
+      body.calculate_velocity
+    end
+    @bodies.each do |body|
+      body.calculate_position
     end
   end
 
