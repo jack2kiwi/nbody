@@ -20,10 +20,10 @@ class NbodySimulation < Gosu::Window
     line_num = 0
     txt.split("\n")
     txt.each_line do |line|
-      if line_num == 0
+      if line_num == 0 && line.length > 0
         @number_of_bodies = line.to_f
         line_num += 1
-      elsif line_num == 1
+      elsif line_num == 1 && line.length > 0
         @size_of_simulation = line.to_f
         line_num += 1
       elsif line_num >= 2 && line_num <= 1 + @number_of_bodies && line.length > 4
