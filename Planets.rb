@@ -20,7 +20,7 @@ class Planets
   end
 
   def draw
-    @image.draw((@x_pos * 320/@size_of_simulation + 320), (@y_pos * 320/@size_of_simulation + 320), ZOrder::Bodies)
+    @image.draw_rot((@x_pos * 320/@size_of_simulation + 320), (@y_pos * 320/@size_of_simulation + 320), ZOrder::Bodies, 0)
   end
 
   def calculate_force(other_body)
